@@ -9,7 +9,10 @@ fun main() {
     }
 
     fun part2(input: List<Pair<Int, Int>>): Int {
-        return input.size
+        val (leftList, rightList) = input.unzip()
+        return leftList.sumOf {current ->
+            rightList.count {it == current} * current
+        }
     }
 
     fun List<String>.prepareInput() = map {
