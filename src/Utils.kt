@@ -24,3 +24,5 @@ fun Any?.println() = println(this)
  * Split a string based on whitespace
  */
 fun String.splitOnWhitespace() = split("""\s+""".toRegex())
+
+fun List<String>.toInts() = map { it.toInt() }
