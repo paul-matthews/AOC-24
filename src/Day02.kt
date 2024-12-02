@@ -1,25 +1,28 @@
 import kotlin.math.abs
 
 fun main() {
+
+    /** Check that all items are either ascending or descending */
+    fun List<Int>.isMonotonic() = this == sorted() || this == sortedDescending()
+
+    /** Get the diff of two numbers (regardless of sign) */
+    fun Int.diff(other: Int) = abs(this - other)
+
     fun part1(input: List<List<Int>>): Int {
         return input.count {line ->
             // Assume that an empty line shouldn't be counted
             if (line.isEmpty()) return@count false
-            // Check for items not being too distant from each other
+
+            // Look to discount line
             line.forEachIndexed() {i, current ->
-                if (i == 0) {
-                    return@forEachIndexed
-                }
+                // Don't check the first one
+                if (i == 0) return@forEachIndexed
                 // Check that the value isn't the same or more than 3 different to previous value
-                val previous = line[i - 1]
-                if (previous == current || abs(previous - current) > 3) {
-                    return@count false
-                }
+                if (current.diff(line[i - 1]) !in 1..3) return@count false
             }
-            // Check that the values are either all descending or ascending
-            if (line != line.sorted() && line != line.sortedDescending()) {
-                return@count false
-            }
+            if (!line.isMonotonic()) return@count false
+
+            // Line is safe
             true
         }
     }
@@ -33,6 +36,7 @@ fun main() {
         }
 
     val testInput = readInput("Day02_test").prepareInput()
+    println(part1(testInput))
     check(part1(testInput) == 2)
 
     val input = readInput("Day02").prepareInput()
