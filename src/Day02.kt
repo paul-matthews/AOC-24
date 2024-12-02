@@ -8,27 +8,40 @@ fun main() {
     /** Get the diff of two numbers (regardless of sign) */
     fun Int.diff(other: Int) = abs(this - other)
 
-    fun part1(input: List<List<Int>>): Int {
-        return input.count {line ->
-            // Assume that an empty line shouldn't be counted
-            if (line.isEmpty()) return@count false
+    /** Test if a line is safe */
+    fun List<Int>.isSafe(): Boolean {
+        // Assume that an empty line shouldn't be counted
+        if (isEmpty()) return false
 
-            // Look to discount line
-            line.forEachIndexed() {i, current ->
-                // Don't check the first one
-                if (i == 0) return@forEachIndexed
-                // Check that the value isn't the same or more than 3 different to previous value
-                if (current.diff(line[i - 1]) !in 1..3) return@count false
-            }
-            if (!line.isMonotonic()) return@count false
-
-            // Line is safe
-            true
+        // Look to discount line
+        forEachIndexed() {i, current ->
+            // Don't check the first one
+            if (i == 0) return@forEachIndexed
+            // Check that the value isn't the same or more than 3 different to previous value
+            if (current.diff(this[i - 1]) !in 1..3) return false
         }
+        if (!isMonotonic()) return false
+
+        // Line is safe
+        return true
     }
 
-    fun part2(input: List<List<Int>>): Int {
-        return input.size
+
+    /** Check if a variant is safe **/
+    fun List<Int>.variantIsSafe(): Boolean {
+        forEachIndexed() { i, _ ->
+            toMutableList().let {
+                it.removeAt(i)
+                if (it.isSafe()) return true
+            }
+        }
+        return false
+    }
+
+    fun part1(input: List<List<Int>>): Int = input.count { it.isSafe() }
+
+    fun part2(input: List<List<Int>>): Int = input.count {
+        it.isSafe() || it.variantIsSafe()
     }
 
     fun List<String>.prepareInput() = map {
@@ -36,7 +49,6 @@ fun main() {
         }
 
     val testInput = readInput("Day02_test").prepareInput()
-    println(part1(testInput))
     check(part1(testInput) == 2)
 
     val input = readInput("Day02").prepareInput()
