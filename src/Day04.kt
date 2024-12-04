@@ -1,6 +1,8 @@
 typealias Position = Pair<Int, Int>
 typealias LetterMap = Map<Int, Map<Int, String>>
 
+fun Position.adjust(f: Int, s: Int) = Position(first + f, second + s)
+
 fun main() {
     val xmasRegex = """XMAS""".toRegex()
     val samxRegex = """SAMX""".toRegex()
@@ -39,6 +41,14 @@ fun main() {
         )
     }
 
+    fun getMas(input: LetterMap, position: Position): List<String> {
+        val upwardsMas = listOf(position.adjust(-1, 1), position, position.adjust(1, -1))
+        val downwardsMas = listOf(position.adjust(1, 1), position, position.adjust(-1, -1))
+        val upValue = getStringFromInput(input, upwardsMas)
+        val downValue = getStringFromInput(input, downwardsMas)
+        return listOf(upValue, upValue.reversed(), downValue, downValue.reversed())
+    }
+
     fun part1(input: List<String>): Int {
         val inputMap = input.toLetterMap()
         var count = 0
@@ -57,15 +67,27 @@ fun main() {
         return count
     }
 
-    fun part2(input: List<String>): Int = input.size
+    fun part2(input: List<String>): Int {
+        val inputMap = input.toLetterMap()
+        var count = 0
+        input.mapIndexed() {lineNo, line ->
+            line.indices.map {i ->
+                if (line[i].toString() == "A") {
+                    count += if (getMas(inputMap, Position(lineNo, i)).count { it == "MAS" } == 2) 1 else 0
+                }
+            }
+        }
+        return count
+    }
 
 
     // Or read a large test input from the `src/Day04_test.txt` file:
     val testInput = readInput("Day04_test")
     check(part1(testInput) == 18)
+    check(part2(testInput) == 9)
+
     // Read the input from the `src/Day04.txt` file.
     val input = readInput("Day04")
     part1(input).println()
-    return
     part2(input).println()
 }
