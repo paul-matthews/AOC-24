@@ -42,11 +42,11 @@ fun main() {
     }
 
     fun getMas(input: LetterMap, position: Position): List<String> {
-        val upwardsMas = listOf(position.adjust(-1, -1), position, position.adjust(1, 1))
+        val upwardsMas = listOf(position.adjust(-1, 1), position, position.adjust(1, -1))
         val downwardsMas = listOf(position.adjust(1, 1), position, position.adjust(-1, -1))
         val upValue = getStringFromInput(input, upwardsMas)
         val downValue = getStringFromInput(input, downwardsMas)
-        return listOf(upValue, downValue, upValue.reversed(), downValue.reversed())
+        return listOf(upValue, upValue.reversed(), downValue, downValue.reversed())
     }
 
     fun part1(input: List<String>): Int {
@@ -72,21 +72,10 @@ fun main() {
         var count = 0
         input.mapIndexed() {lineNo, line ->
             line.indices.map {i ->
-                val current = line[i].toString()
-                if (current == "A") {
-                    val mas = getMas(inputMap, Position(lineNo, i))
-                    val position = Position(lineNo, i)
-                    val prevCount = count
-                    count += if (getMas(inputMap, position).count { it == "MAS" } == 2) 1 else 0
-                    if (prevCount != count)
-                        println("[$position] Count: $count, mas: $mas")
-                        println(line)
+                if (line[i].toString() == "A") {
+                    count += if (getMas(inputMap, Position(lineNo, i)).count { it == "MAS" } == 2) 1 else 0
                 }
             }
-        }
-        count += input.sumOf {
-            xmasRegex.findAll(it).count() +
-                    samxRegex.findAll(it).count()
         }
         return count
     }
@@ -95,9 +84,8 @@ fun main() {
     // Or read a large test input from the `src/Day04_test.txt` file:
     val testInput = readInput("Day04_test")
     check(part1(testInput) == 18)
-    val p2 = part2(testInput)
-    println(p2)
-    check(p2 == 9)
+    check(part2(testInput) == 9)
+
     // Read the input from the `src/Day04.txt` file.
     val input = readInput("Day04")
     part1(input).println()
