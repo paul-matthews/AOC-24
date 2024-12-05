@@ -1,23 +1,41 @@
-import kotlin.math.abs
-
 fun main() {
     class RulesIndex() {
         val notBeforeRules: MutableMap<Int, List<Int>> = mutableMapOf()
-
         fun addRule(before: Int, after: Int) {
             notBeforeRules[after] = notBeforeRules.getOrDefault(after, listOf()) + before
         }
-
         fun getNotAllowedBefore(element: Int) = notBeforeRules.getOrDefault(element, listOf())
     }
 
-    fun checkRules(index: RulesIndex, items: List<Int>): Boolean {
-        if (items.size < 2) return true
+    fun checkFirstItemOK(index: RulesIndex, items: List<Int>): Boolean {
         val current = items.first()
         index.getNotAllowedBefore(current).forEach() {
             if(items.contains(it)) return false
         }
+        return true
+    }
+
+    fun checkRules(index: RulesIndex, items: List<Int>): Boolean {
+        if (items.size < 2) return true
+        if (!checkFirstItemOK(index, items)) return false
         return checkRules(index, items.drop(1))
+    }
+
+    fun moveItems(index: RulesIndex, items: List<Int>): List<Int> {
+        if (items.size < 2) return items
+        var current = items.first()
+        val newItems = items.toMutableList()
+        while (!checkFirstItemOK(index, newItems)) {
+            index.getNotAllowedBefore(current).forEach() {
+                val otherIndex = newItems.indexOf(it)
+                if (otherIndex > -1) {
+                    newItems.removeAt(otherIndex)
+                    newItems.add(0, it)
+                }
+                current = newItems.first()
+            }
+        }
+        return listOf(current) + moveItems(index, newItems.drop(1))
     }
 
     fun List<Int>.getMiddleElement() = getOrNull(size / 2) ?: getOrNull(size / 2 - 1)
@@ -31,8 +49,15 @@ fun main() {
         }.sum()
     }
 
-    fun part2(inputUpdates: List<String>, inputRules: List<String>): Int {
-        return 0
+    fun part2(inputUpdates: List<List<Int>>, inputRules: RulesIndex): Int {
+        return inputUpdates.sumOf {
+            if (checkRules(inputRules, it)) {
+                // Ignore correct answers
+                0
+            } else {
+                moveItems(inputRules, it).getMiddleElement() ?: 0
+            }
+        }
     }
 
     fun List<String>.getRules() = map {
@@ -50,6 +75,7 @@ fun main() {
         }
     }
     check(part1(testInput, testInputRules) == 143)
+    check(part2(testInput, testInputRules) == 123)
 
     // Read the input from the `src/Day05.txt` file.
     val input = readInput("Day05").getInput()
@@ -59,6 +85,5 @@ fun main() {
         }
     }
     part1(input, inputRules).println()
-    return
-//    part2(input, inputRules).println()
+    part2(input, inputRules).println()
 }
