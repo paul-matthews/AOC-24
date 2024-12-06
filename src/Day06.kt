@@ -11,6 +11,7 @@ fun Coord.isValid(area: Area): Boolean {
 
 const val GUARD_CHAR = '^'
 const val OBSTACLE_CHAR = '#'
+const val NUM_VISITS_IS_LOOP = 5
 
 enum class Direction {
     NORTH {
@@ -34,7 +35,8 @@ enum class Direction {
 }
 
 fun main() {
-    class MappedArea(input: List<String>) {
+    data class MappedArea(val input: List<String>) {
+        var guardLastCoord: Coord = Pair(-1, -1)
         var guardCoord: Coord = Pair(-1, -1)
         var guardDirection = Direction.NORTH
         var guardVisited = mutableMapOf<Coord, Int>()
@@ -59,6 +61,23 @@ fun main() {
             return getNextLocation().isValid(area)
         }
 
+        fun hasObstacleOnTurnPath(): Coord? {
+            val newDir = guardDirection.turn()
+            var currentLocation = guardCoord
+            while (!obstacles.contains(currentLocation) && currentLocation.isValid(area)) {
+                currentLocation = newDir.move(currentLocation)
+            }
+            return if (obstacles.contains(currentLocation)) guardDirection.move(guardCoord) else null
+        }
+
+        fun isInLoop(): Boolean =
+            (guardVisited.getOrDefault(guardCoord, 0) > NUM_VISITS_IS_LOOP) &&
+                    (guardVisited.getOrDefault(guardLastCoord, 0) > NUM_VISITS_IS_LOOP)
+
+        fun addObstacle(coord: Coord): MappedArea = copy().also {
+            it.obstacles.add(coord)
+        }
+
         private fun getNextLocation(): Coord {
             var newLocation = guardDirection.move(guardCoord)
             if (obstacles.contains(newLocation)) {
@@ -69,8 +88,9 @@ fun main() {
         }
 
         private fun guardVisits(coord: Coord) {
+            guardLastCoord = guardCoord
             guardCoord = coord
-            guardVisited[coord] = guardVisited.getOrDefault(coord, 0)
+            guardVisited[coord] = guardVisited.getOrDefault(coord, 0) + 1
         }
     }
     fun part1(input: MappedArea): Int {
@@ -80,8 +100,22 @@ fun main() {
         return input.guardVisited.count()
     }
 
-    fun part2(inputUpdates: List<String>): Int {
-        return 0
+    fun part2(input: MappedArea): Int {
+        val positionsToTry = mutableSetOf<Coord>()
+        while (input.moveGuard()) {
+            input.hasObstacleOnTurnPath()?.let {
+                positionsToTry.add(it)
+            }
+        }
+        var count = 0
+        val c = positionsToTry.count {testCoord ->
+            val testInput = input.addObstacle(testCoord)
+            while (testInput.moveGuard() && !testInput.isInLoop()) {
+                // Do nothing
+            }
+            testInput.isInLoop()
+        }
+        return c
     }
 
     fun List<String>.prepareInput() = MappedArea(this)
@@ -89,9 +123,10 @@ fun main() {
     // Or read a large test input from the `src/Day06_test.txt` file:
     val testInput = readInput("Day06_test")
     check(part1(testInput.prepareInput()) == 41)
+    check(part2(testInput.prepareInput()) == 6)
 
     // Read the input from the `src/Day06.txt` file.
     val input = readInput("Day06")
     part1(MappedArea(input)).println()
-//    part2(input).println()
+    part2(MappedArea(input)).println()
 }
