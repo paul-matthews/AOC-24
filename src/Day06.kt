@@ -120,13 +120,17 @@ fun main() {
 
     fun List<String>.prepareInput() = MappedArea(this)
 
-    // Or read a large test input from the `src/Day06_test.txt` file:
-    val testInput = readInput("Day06_test")
-    check(part1(testInput.prepareInput()) == 41)
-    check(part2(testInput.prepareInput()) == 6)
+    measureExecutionTime {
+        // Or read a large test input from the `src/Day06_test.txt` file:
+        val testInput = readInput("Day06_test")
+        check(part1(testInput.prepareInput()) == 41)
+        check(part2(testInput.prepareInput()) == 6)
 
-    // Read the input from the `src/Day06.txt` file.
-    val input = readInput("Day06")
-    part1(MappedArea(input)).println()
-    part2(MappedArea(input)).println()
+        // Read the input from the `src/Day06.txt` file.
+        val input = readInput("Day06")
+        part1(MappedArea(input)).println()
+        measureExecutionTime("part2") {
+            part2(MappedArea(input)).println()
+        }
+    }
 }

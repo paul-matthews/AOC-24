@@ -26,3 +26,12 @@ fun Any?.println() = println(this)
 fun String.splitOnWhitespace() = split("""\s+""".toRegex())
 
 fun List<String>.toInts() = map { it.toInt() }
+
+fun measureExecutionTime(key: String = "main", block: () -> Unit) {
+    val startTime = System.currentTimeMillis()
+    block()
+    val endTime = System.currentTimeMillis()
+    val executionTime = endTime - startTime
+
+    println("#> [$key] Execution time: ${executionTime}ms")
+}
