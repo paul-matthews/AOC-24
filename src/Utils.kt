@@ -35,3 +35,12 @@ fun measureExecutionTime(key: String = "main", block: () -> Unit) {
 
     println("#> [$key] Execution time: ${executionTime}ms")
 }
+
+/**
+ * Get the second element in a list or throw an exception
+ */
+fun <T> List<T>.second(): T {
+    if (size < 2)
+        throw NoSuchElementException("List is empty.")
+    return this[1]
+}
