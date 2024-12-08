@@ -47,11 +47,12 @@ fun Coord.move(firstDiff: Int = 0, secondDiff: Int = 0) = Coord(first + firstDif
  * A representation of a map
  */
 typealias MapInput = Map<Int, Map<Int, String>>
-fun List<String>.toMapInput(block: (Char, Coord) -> String): MapInput = mapIndexed { x, line ->
-    x to line.mapIndexed { y, char ->
-        y to block(char, Coord(x, y))
+fun List<String>.toMapInput(block: (Char, Coord) -> String = {c, _ -> c.toString()}): MapInput =
+    mapIndexed { x, line ->
+        x to line.mapIndexed { y, char ->
+            y to block(char, Coord(x, y))
+        }.toMap()
     }.toMap()
-}.toMap()
 
 /**
  * Measure the execution time of a block in ms
