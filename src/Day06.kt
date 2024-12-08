@@ -1,9 +1,3 @@
-fun Coord.isValid(areaSize: Pair<Int, Int>): Boolean {
-    return first >= 0 && second >= 0 &&
-            first < areaSize.first &&
-            second < areaSize.second
-}
-
 const val GUARD_CHAR = '^'
 const val OBSTACLE_CHAR = '#'
 const val NUM_VISITS_IS_LOOP = 5

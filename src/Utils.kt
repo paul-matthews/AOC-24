@@ -2,6 +2,7 @@ import java.math.BigInteger
 import java.security.MessageDigest
 import kotlin.io.path.Path
 import kotlin.io.path.readText
+import kotlin.math.abs
 
 /**
  * Reads lines from the given input txt file.
@@ -19,6 +20,10 @@ fun String.md5() = BigInteger(1, MessageDigest.getInstance("MD5").digest(toByteA
  * The cleaner shorthand for printing output.
  */
 fun Any?.println() = println(this)
+
+
+/** Get the diff of two numbers (regardless of sign) */
+fun Int.diff(other: Int) = abs(this - other)
 
 /**
  * Split a string based on whitespace
@@ -44,6 +49,20 @@ typealias Coord = Pair<Int, Int>
 fun Coord.move(firstDiff: Int = 0, secondDiff: Int = 0) = Coord(first + firstDiff, second + secondDiff)
 
 /**
+ * Diff a two Coord ignoring sign
+ */
+fun Coord.diff(other: Coord) = Pair(first.diff(other.first), second.diff(other.second))
+
+/**
+ * Check if the Coordinate is within the area
+ */
+fun Coord.isValid(mapSize: Pair<Int, Int>): Boolean {
+    return first >= 0 && second >= 0 &&
+            first < mapSize.first &&
+            second < mapSize.second
+}
+
+/**
  * A representation of a map
  */
 typealias MapInput = Map<Int, Map<Int, String>>
@@ -59,6 +78,15 @@ fun List<String>.toMapInput(block: (Char, Coord) -> String = {c, _ -> c.toString
  */
 fun MapInput.getSizeForSquare(): Pair<Int, Int> =
     Pair(this.size, this.getOrDefault(0, emptyMap()).size)
+
+fun MapInput.print(modify: (Coord, String) -> String) {
+    forEach() {(x, line) ->
+        line.forEach() {(y, value) ->
+            print(modify(Coord(x, y), value))
+        }
+        println("")
+    }
+}
 
 /**
  * Measure the execution time of a block in ms

@@ -1,12 +1,7 @@
-import kotlin.math.abs
-
 fun main() {
 
     /** Check that all items are either ascending or descending */
     fun List<Int>.isMonotonic() = this == sorted() || this == sortedDescending()
-
-    /** Get the diff of two numbers (regardless of sign) */
-    fun Int.diff(other: Int) = abs(this - other)
 
     /** Test if a line is safe */
     fun List<Int>.isSafe(): Boolean {
