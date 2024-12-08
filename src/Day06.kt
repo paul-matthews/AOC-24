@@ -1,7 +1,7 @@
-fun Coord.isValid(area: MapInput): Boolean {
+fun Coord.isValid(areaSize: Pair<Int, Int>): Boolean {
     return first >= 0 && second >= 0 &&
-            first < area.size &&
-            second < (area.getOrDefault(0, emptyMap()).size)
+            first < areaSize.first &&
+            second < areaSize.second
 }
 
 const val GUARD_CHAR = '^'
@@ -48,16 +48,17 @@ fun main() {
          */
         fun moveGuard(): Boolean {
             val newLocation = getNextLocation()
-            if (newLocation.isValid(area)) {
+            val areaSize = area.getSizeForSquare()
+            if (newLocation.isValid(areaSize)) {
                 guardVisits(newLocation)
             }
-            return getNextLocation().isValid(area)
+            return getNextLocation().isValid(areaSize)
         }
 
         fun hasObstacleOnTurnPath(): Coord? {
             val newDir = guardDirection.turn()
             var currentLocation = guardCoord
-            while (!obstacles.contains(currentLocation) && currentLocation.isValid(area)) {
+            while (!obstacles.contains(currentLocation) && currentLocation.isValid(area.getSizeForSquare())) {
                 currentLocation = newDir.move(currentLocation)
             }
             return if (obstacles.contains(currentLocation)) guardDirection.move(guardCoord) else null

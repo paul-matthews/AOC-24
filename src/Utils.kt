@@ -55,6 +55,12 @@ fun List<String>.toMapInput(block: (Char, Coord) -> String = {c, _ -> c.toString
     }.toMap()
 
 /**
+ * Get the size of the Map, assuming it's square
+ */
+fun MapInput.getSizeForSquare(): Pair<Int, Int> =
+    Pair(this.size, this.getOrDefault(0, emptyMap()).size)
+
+/**
  * Measure the execution time of a block in ms
  *
  * @param key is the label to apply, otheriwse "main is used"
