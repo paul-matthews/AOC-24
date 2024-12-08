@@ -25,8 +25,40 @@ fun Any?.println() = println(this)
  */
 fun String.splitOnWhitespace() = split("""\s+""".toRegex())
 
+
+/**
+ * Convert a List of String to a List of Int
+ *
+ * A convenience method
+ */
 fun List<String>.toInts() = map { it.toInt() }
 
+/**
+ * An Coordinate representing object
+ */
+typealias Coord = Pair<Int, Int>
+
+/**
+ * Provide a function to move to another coordinate
+ */
+fun Coord.move(firstDiff: Int = 0, secondDiff: Int = 0) = Coord(first + firstDiff, second + secondDiff)
+
+/**
+ * A representation of a map
+ */
+typealias MapInput = Map<Int, Map<Int, String>>
+fun List<String>.toMapInput(block: (Char, Coord) -> String): MapInput = mapIndexed { x, line ->
+    x to line.mapIndexed { y, char ->
+        y to block(char, Coord(x, y))
+    }.toMap()
+}.toMap()
+
+/**
+ * Measure the execution time of a block in ms
+ *
+ * @param key is the label to apply, otheriwse "main is used"
+ * @param block is the block to measure
+ */
 fun measureExecutionTime(key: String = "main", block: () -> Unit) {
     val startTime = System.currentTimeMillis()
     block()
