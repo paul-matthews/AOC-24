@@ -21,6 +21,12 @@ fun String.md5() = BigInteger(1, MessageDigest.getInstance("MD5").digest(toByteA
  */
 fun Any?.println() = println(this)
 
+/**
+ * Tests if an int is even
+ *
+ * Convenience function
+ */
+fun Int.isEven(): Boolean = (this % 2) == 0
 
 /** Get the diff of two numbers (regardless of sign) */
 fun Int.diff(other: Int) = abs(this - other)
@@ -61,6 +67,20 @@ fun Coord.isValid(mapSize: Pair<Int, Int>): Boolean {
             first < mapSize.first &&
             second < mapSize.second
 }
+
+/**
+ * Convert a string to a Map of Key to Letter (String)
+ */
+fun String.toLetters(): Map<Int, String> = this.mapIndexed { y, char ->
+    y to char.toString()
+}.toMap()
+
+/**
+ * Convert a string to a Map of Key to Letter (String)
+ */
+fun String.toNumbers(): Map<Int, Int> = this.mapIndexed { y, char ->
+    y to char.toString().toInt()
+}.toMap()
 
 /**
  * A representation of a map
