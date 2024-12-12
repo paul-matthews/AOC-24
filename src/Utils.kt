@@ -60,6 +60,15 @@ fun Coord.move(firstDiff: Int = 0, secondDiff: Int = 0) = Coord(first + firstDif
 fun Coord.diff(other: Coord) = Pair(first.diff(other.first), second.diff(other.second))
 
 /**
+ * Get all the edges for a given coordinate
+ */
+fun Coord.getEdges(mapSize: Pair<Int, Int>) = listOf(
+    this.move(-1, -1), this.move(-1, 0), this.move(-1, 1),
+    this.move(0, -1), this.move(0, 1),
+    this.move(1, -1), this.move(1, 0), this.move(1, 1)
+).filter { it.isValid(mapSize) }
+
+/**
  * Check if the Coordinate is within the area
  */
 fun Coord.isValid(mapSize: Pair<Int, Int>): Boolean {
@@ -93,13 +102,24 @@ fun List<String>.toMapInput(block: (Char, Coord) -> String = {c, _ -> c.toString
         }.toMap()
     }.toMap()
 
+fun MapInput.getCoord(coord: Coord): String? =
+    this[coord.first]?.get(coord.second)
+
+fun MapInput.walk(action: (Coord, String) -> Unit) {
+    this.forEach() { (x, line) ->
+        line.forEach() { (y, value) ->
+            action(Coord(x, y), value)
+        }
+    }
+}
+
 /**
  * Get the size of the Map, assuming it's square
  */
 fun MapInput.getSizeForSquare(): Pair<Int, Int> =
     Pair(this.size, this.getOrDefault(0, emptyMap()).size)
 
-fun MapInput.print(modify: (Coord, String) -> String) {
+fun MapInput.print(modify: (Coord, String) -> String = {_, value -> value}) {
     forEach() {(x, line) ->
         line.forEach() {(y, value) ->
             print(modify(Coord(x, y), value))
